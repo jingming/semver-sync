@@ -9217,7 +9217,6 @@ function wrappy (fn, cb) {
 /***/ 2898:
 /***/ ((module) => {
 
-
 VALID_TYPES = ['patch', 'minor', 'major']
 
 
@@ -9309,7 +9308,7 @@ class Updater {
     const sha = await this.getLatestCommit(owner, repo)
     if (changeType == 'patch') {
       const releaseVersion = `v${[major, minor, parseInt(patch) + 1].join('.')}`
-      this.addTag(sha, owner, repo, releaseVersion)
+      await this.addTag(sha, owner, repo, releaseVersion)
       this.updateTag(sha, owner, repo, `v${[major, minor].join('.')}`)
       this.updateTag(sha, owner, repo, `v${major}`)
 
@@ -9320,7 +9319,7 @@ class Updater {
 
     if (changeType == 'minor') {
       const releaseVersion = `v${[major, parseInt(minor) + 1, 0].join('.')}`
-      this.addTag(sha, owner, repo, releaseVersion)
+      await this.addTag(sha, owner, repo, releaseVersion)
       this.addTag(sha, owner, repo, `v${[major, parseInt(minor) + 1].join('.')}`)
       this.updateTag(sha, owner, repo, `v${major}`)
 
@@ -9331,7 +9330,7 @@ class Updater {
 
     // changeType == 'major'
     const releaseVersion = `v${parseInt(major) + 1}.0.0`
-    this.addTag(sha, owner, repo, releaseVersion)
+    await this.addTag(sha, owner, repo, releaseVersion)
     this.addTag(sha, owner, repo, `v${parseInt(major) + 1}.0`)
     this.addTag(sha, owner, repo, `v${parseInt(major) + 1}`)
 
