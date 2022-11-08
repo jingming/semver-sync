@@ -9435,7 +9435,7 @@ const Updater = __nccwpck_require__(2898)
 
 async function run() {
   const octokit = new Octokit({
-    auth: getInput('token'),
+    auth: core.getInput('token'),
   })
   const updater = new Updater(octokit)
   updater.update(core.getInput('owner'), core.getInput('repo'), core.getInput('change-type'))
