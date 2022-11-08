@@ -9227,6 +9227,29 @@ class Updater {
     this.octokit = octokit
   }
 
+  async addTag(sha, owner, repo, version) {
+    console.log(`Adding tag ${version}`)
+    const result = await this.octokit.request('POST /repos/{owner}/{repo}/git/refs', {
+      owner: owner,
+      repo: repo,
+      sha: sha,
+      ref: `refs/tags/${version}`
+    })
+    console.log(result.status)
+    console.log(result.data)
+  }
+
+  async deleteTag(owner, repo, version) {
+    console.log(`Deleting tag ${version}`)
+    const result = await this.octokit.request('DELETE /repos/{owner}/{repo}/git/refs/{version}', {
+      owner: owner,
+      repo: repo,
+      version: version
+    })
+    console.log(result.status)
+    console.log(result.data)
+  }
+
   async update(owner, repo, changeType) {
 
     if (!VALID_TYPES.includes(changeType)) {
@@ -9234,16 +9257,51 @@ class Updater {
       throw new Error(`Invalid type: ${changeType}`)
     }
 
-    releases = await this.octokit.request('GET /repos/{owner}/{repo}/releases', {
+    const releases = await this.octokit.request('GET /repos/{owner}/{repo}/releases', {
       owner: owner,
       repo: repo
     })
+    if (releases.status != 200) {
+      console.log("Unable to fetch latest releases")
+      throw new Error("Unable to fetch latest releases")
+    }
 
-    console.log(releases);
-    // major, minor, patch =
+    const commits = await this.octokit.request('GET /repos/{owner}/{repo}/commits', {
+      owner: owner,
+      repo: repo
+    })
+    if (commits.status != 200) {
+      console.log("Unable to fetch latest commits")
+      throw new Error("Unable to fetch latest commits")
+    }
 
+    const sha = commits.data[0].sha;
+    const tag = releases.data[0].tag_name.replace('v', '')
+    const [major, minor, patch] = tag.split('.')
+    if (changeType == 'patch') {
+      this.addTag(sha, owner, repo, `v${[major, minor, parseInt(patch) + 1].join('.')}`)
+      this.deleteTag(owner, repo, `v${[major, minor].join('.')}`)
+      this.addTag(sha, owner, repo, `v${[major, minor].join('.')}`)
+      this.deleteTag(owner, repo, `v${major}`)
+      this.addTag(sha, owner, repo, `v${major}`)
+
+      return
+    }
+
+    if (changeType == 'minor') {
+      this.addTag(sha, owner, repo, `v${[major, parseInt(minor) + 1, 0].join('.')}`)
+      this.addTag(sha, owner, repo, `v${[major, parseInt(minor) + 1].join('.')}`)
+      this.deleteTag(owner, repo, `v${major}`)
+      this.addTag(sha, owner, repo, `v${major}`)
+
+      return
+    }
+
+    // changeType == 'major'
+    this.addTag(sha, owner, repo, `v${parseInt(major) + 1}.0.0`)
+    this.addTag(sha, owner, repo, `v${parseInt(major) + 1}.0`)
+    this.addTag(sha, owner, repo, `v${parseInt(major) + 1}`)
   }
-
 
 }
 
