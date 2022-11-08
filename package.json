@@ -1,0 +1,17 @@
+{
+  "name": "semver-sync",
+  "version": "1.0.0",
+  "description": "Update semver tags for a GitHub Action",
+  "main": "index.js",
+  "scripts": {
+    "test": "yarn test",
+    "build": "ncc build index.js -o dist"
+  },
+  "author": "niu@jingming.ca",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1",
+    "@vercel/ncc": "^0.34.0"
+  }
+}

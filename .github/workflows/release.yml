@@ -1,0 +1,26 @@
+name: Update the release version and sync any semver tags as needed.
+
+on:
+  workflow_dispatch:
+    inputs:
+      change-type:
+        description: 'Type of change to release'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+        required: true
+
+
+jobs:
+  update-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update tags
+        uses: jingming/semver-sync@main
+        with:
+          owner: jingming
+          repo: semver-sync
+          change-type: ${{ inputs.change-type }}
+          token: ${{ secrets.GITHUB_TOKEN }}
