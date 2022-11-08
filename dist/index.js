@@ -9239,12 +9239,14 @@ class Updater {
     console.log(result.data)
   }
 
-  async deleteTag(owner, repo, version) {
-    console.log(`Deleting tag ${version}`)
-    const result = await this.octokit.request('DELETE /repos/{owner}/{repo}/git/refs/{version}', {
+  async updateTag(sha, owner, repo, version) {
+    console.log(`Updating tag ${version}`)
+    const result = await this.octokit.request('PATCH /repos/{owner}/{repo}/git/refs/tags/{version}', {
       owner: owner,
       repo: repo,
-      version: version
+      version: version,
+      sha: sha,
+      force: true
     })
     console.log(result.status)
     console.log(result.data)
@@ -9280,10 +9282,8 @@ class Updater {
     const [major, minor, patch] = tag.split('.')
     if (changeType == 'patch') {
       this.addTag(sha, owner, repo, `v${[major, minor, parseInt(patch) + 1].join('.')}`)
-      this.deleteTag(owner, repo, `v${[major, minor].join('.')}`)
-      this.addTag(sha, owner, repo, `v${[major, minor].join('.')}`)
-      this.deleteTag(owner, repo, `v${major}`)
-      this.addTag(sha, owner, repo, `v${major}`)
+      this.updateTag(sha, owner, repo, `v${[major, minor].join('.')}`)
+      this.updateTag(sha, owner, repo, `v${major}`)
 
       return
     }
@@ -9291,8 +9291,7 @@ class Updater {
     if (changeType == 'minor') {
       this.addTag(sha, owner, repo, `v${[major, parseInt(minor) + 1, 0].join('.')}`)
       this.addTag(sha, owner, repo, `v${[major, parseInt(minor) + 1].join('.')}`)
-      this.deleteTag(owner, repo, `v${major}`)
-      this.addTag(sha, owner, repo, `v${major}`)
+      this.updateTag(sha, owner, repo, `v${major}`)
 
       return
     }

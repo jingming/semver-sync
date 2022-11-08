@@ -105,7 +105,7 @@ describe("Semver Updater", () => {
 
     await updater.update('foo', 'bar', 'patch')
 
-    expect(request.mock.calls).toHaveLength(7)
+    expect(request.mock.calls).toHaveLength(5)
 
     const release = request.mock.calls[0]
     expect(release[0]).toBe('GET /repos/{owner}/{repo}/releases')
@@ -130,38 +130,24 @@ describe("Semver Updater", () => {
       ref: 'refs/tags/v1.0.4'
     })
 
-    const deleteMinor = request.mock.calls[3]
-    expect(deleteMinor[0]).toBe('DELETE /repos/{owner}/{repo}/git/refs/{version}')
-    expect(deleteMinor[1]).toEqual({
-      owner: 'foo',
-      repo: 'bar',
-      version: 'v1.0'
-    })
-
-    const updateMinor = request.mock.calls[4]
-    expect(updateMinor[0]).toBe('POST /repos/{owner}/{repo}/git/refs')
+    const updateMinor = request.mock.calls[3]
+    expect(updateMinor[0]).toBe('PATCH /repos/{owner}/{repo}/git/refs/tags/{version}')
     expect(updateMinor[1]).toEqual({
       owner: 'foo',
       repo: 'bar',
       sha: 'iamasha',
-      ref: 'refs/tags/v1.0'
+      version: 'v1.0',
+      force: true
     })
 
-    const deleteMajor = request.mock.calls[5]
-    expect(deleteMajor[0]).toBe('DELETE /repos/{owner}/{repo}/git/refs/{version}')
-    expect(deleteMajor[1]).toEqual({
-      owner: 'foo',
-      repo: 'bar',
-      version: 'v1'
-    })
-
-    const updateMajor = request.mock.calls[6]
-    expect(updateMajor[0]).toBe('POST /repos/{owner}/{repo}/git/refs')
+    const updateMajor = request.mock.calls[4]
+    expect(updateMajor[0]).toBe('PATCH /repos/{owner}/{repo}/git/refs/tags/{version}')
     expect(updateMajor[1]).toEqual({
       owner: 'foo',
       repo: 'bar',
       sha: 'iamasha',
-      ref: 'refs/tags/v1'
+      version: 'v1',
+      force: true
     })
 
   })
@@ -201,7 +187,7 @@ describe("Semver Updater", () => {
 
     await updater.update('foo', 'bar', 'minor')
 
-    expect(request.mock.calls).toHaveLength(6)
+    expect(request.mock.calls).toHaveLength(5)
 
     const release = request.mock.calls[0]
     expect(release[0]).toBe('GET /repos/{owner}/{repo}/releases')
@@ -235,21 +221,14 @@ describe("Semver Updater", () => {
       ref: 'refs/tags/v1.1'
     })
 
-    const deleteMajor = request.mock.calls[4]
-    expect(deleteMajor[0]).toBe('DELETE /repos/{owner}/{repo}/git/refs/{version}')
-    expect(deleteMajor[1]).toEqual({
-      owner: 'foo',
-      repo: 'bar',
-      version: 'v1'
-    })
-
-    const updateMajor = request.mock.calls[5]
-    expect(updateMajor[0]).toBe('POST /repos/{owner}/{repo}/git/refs')
+    const updateMajor = request.mock.calls[4]
+    expect(updateMajor[0]).toBe('PATCH /repos/{owner}/{repo}/git/refs/tags/{version}')
     expect(updateMajor[1]).toEqual({
       owner: 'foo',
       repo: 'bar',
       sha: 'iamasha',
-      ref: 'refs/tags/v1'
+      version: 'v1',
+      force: true
     })
 
   })
