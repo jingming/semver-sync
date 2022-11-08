@@ -1,0 +1,24 @@
+name: 'Update the semver tags of a repo based on a change type'
+description: |
+  Update the semver tags of a repo based on a change type.
+
+  If we are updating a patch version, it will point the minor + major to the latest.
+  If we are updating a minor version, it will point the major to the latest.
+
+inputs:
+  owner:
+    description: 'Owner of the repo'
+    required: true
+  repo:
+    description: 'Name of the repo'
+    required: true
+  change-type:
+    description: 'The change type'
+    required: true
+  token:
+    description: 'The GitHub client auth token. This token must be able to create comments.'
+    required: true
+
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
