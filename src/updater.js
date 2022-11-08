@@ -1,4 +1,3 @@
-
 VALID_TYPES = ['patch', 'minor', 'major']
 
 
