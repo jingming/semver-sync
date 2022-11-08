@@ -101,6 +101,10 @@ describe("Semver Updater", () => {
         status: 201,
         data: 'success'
       }))
+      .mockReturnValueOnce(Promise.resolve({
+        status: 201,
+        data: 'success'
+      }))
 
     const updater = new Updater({ request })
 
@@ -158,7 +162,7 @@ describe("Semver Updater", () => {
       repo: 'bar',
       tag_name: 'v1.0.4',
       name: 'v1.0.4',
-      generate_release_notes: true
+      body: `**Full Changelog**: https://github.com/foo/bar/compare/v1.0.3...v1.0.4`
     })
 
   })
@@ -187,6 +191,10 @@ describe("Semver Updater", () => {
       }))
       .mockReturnValueOnce(Promise.resolve({
         status: 204,
+        data: 'success'
+      }))
+      .mockReturnValueOnce(Promise.resolve({
+        status: 201,
         data: 'success'
       }))
       .mockReturnValueOnce(Promise.resolve({
@@ -249,7 +257,7 @@ describe("Semver Updater", () => {
       repo: 'bar',
       tag_name: 'v1.1.0',
       name: 'v1.1.0',
-      generate_release_notes: true
+      body: `**Full Changelog**: https://github.com/foo/bar/compare/v1.0.3...v1.1.0`
     })
 
   })
@@ -267,6 +275,10 @@ describe("Semver Updater", () => {
         data: [{
           sha: 'iamasha'
         }]
+      }))
+      .mockReturnValueOnce(Promise.resolve({
+        status: 201,
+        data: 'success'
       }))
       .mockReturnValueOnce(Promise.resolve({
         status: 201,
@@ -335,7 +347,7 @@ describe("Semver Updater", () => {
       repo: 'bar',
       tag_name: 'v2.0.0',
       name: 'v2.0.0',
-      generate_release_notes: true
+      body: `**Full Changelog**: https://github.com/foo/bar/compare/v1.0.3...v2.0.0`
     })
 
   })
@@ -351,6 +363,10 @@ describe("Semver Updater", () => {
         data: [{
           sha: 'iamasha'
         }]
+      }))
+      .mockReturnValueOnce(Promise.resolve({
+        status: 201,
+        data: 'success'
       }))
       .mockReturnValueOnce(Promise.resolve({
         status: 201,
@@ -419,7 +435,7 @@ describe("Semver Updater", () => {
       repo: 'bar',
       tag_name: 'v1.0.0',
       name: 'v1.0.0',
-      generate_release_notes: true
+      body: `**Full Changelog**: https://github.com/foo/bar/compare/v0.0.0...v1.0.0`
     })
 
   })

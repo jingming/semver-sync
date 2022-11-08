@@ -9251,14 +9251,14 @@ class Updater {
     console.log(result.data)
   }
 
-  async createRelease(owner, repo, version) {
+  async createRelease(owner, repo, version, previousVersion) {
     console.log(`Creating release ${version}`)
     const result = await this.octokit.request('POST /repos/{owner}/{repo}/releases', {
       owner: owner,
       repo: repo,
       tag_name: version,
       name: version,
-      generate_release_notes: true
+      body: `**Full Changelog**: https://github.com/${owner}/${repo}/compare/v${previousVersion}...${version}`
     })
     console.log(result.status)
     console.log(result.data)
@@ -9312,7 +9312,7 @@ class Updater {
       this.updateTag(sha, owner, repo, `v${[major, minor].join('.')}`)
       this.updateTag(sha, owner, repo, `v${major}`)
 
-      this.createRelease(owner, repo, releaseVersion)
+      this.createRelease(owner, repo, releaseVersion, tag)
 
       return
     }
@@ -9323,7 +9323,7 @@ class Updater {
       this.addTag(sha, owner, repo, `v${[major, parseInt(minor) + 1].join('.')}`)
       this.updateTag(sha, owner, repo, `v${major}`)
 
-      this.createRelease(owner, repo, releaseVersion)
+      this.createRelease(owner, repo, releaseVersion, tag)
 
       return
     }
@@ -9334,7 +9334,7 @@ class Updater {
     this.addTag(sha, owner, repo, `v${parseInt(major) + 1}.0`)
     this.addTag(sha, owner, repo, `v${parseInt(major) + 1}`)
 
-    this.createRelease(owner, repo, releaseVersion)
+    this.createRelease(owner, repo, releaseVersion, tag)
   }
 
 }
