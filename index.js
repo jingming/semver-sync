@@ -4,7 +4,7 @@ const Updater = require('./src/updater')
 
 async function run() {
   const octokit = new Octokit({
-    auth: getInput('ACTIONS_ACCESS_KEY'),
+    auth: getInput('token'),
   })
   const updater = new Updater(octokit)
   updater.update(core.getInput('owner'), core.getInput('repo'), core.getInput('change-type'))

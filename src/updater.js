@@ -27,3 +27,5 @@ class Updater {
 
 
 }
+
+module.exports = Updater
