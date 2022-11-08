@@ -1,0 +1,52 @@
+{
+    "env": {
+        "node": true,
+        "commonjs": true,
+        "es2021": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:jest/recommended",
+        "plugin:storybook/recommended",
+        "prettier"
+    ],
+    "ignorePatterns": ["**/node_modules/**", "**/dist/**"],
+    "overrides": [
+        {
+            "files": ["**test.js"],
+            "plugins": ["jest"],
+            "extends": ["plugin:jest/recommended"],
+            "rules": { "jest/prefer-expect-assertions": "off" }
+        }
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "plugins": [
+        "jest",
+        "prettier",
+        "filename-rules"
+    ],
+    "rules": {
+        "semi": ["off"],
+        "jest/no-disabled-tests": "warn",
+        "jest/no-focused-tests": "error",
+        "jest/no-identical-title": "error",
+        "jest/prefer-to-have-length": "warn",
+        "jest/valid-expect": "error",
+        "no-useless-constructor": "off",
+        "curly": [
+            "error",
+            "all"
+        ],
+        "arrow-body-style": [
+            "error",
+            "as-needed"
+        ],
+        "react/require-default-props": "off",
+        "filename-rules/match": [
+            2,
+            "kebab-case"
+        ]
+    }
+}
