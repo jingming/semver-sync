@@ -37,7 +37,8 @@ describe("Semver Updater", () => {
   test("Throw an error when unable to fetch commits", async () => {
     const request = jest.fn()
       .mockReturnValueOnce(Promise.resolve({
-        status: 200
+        status: 200,
+        data: []
       }))
       .mockReturnValueOnce(Promise.resolve({
         status: 500
@@ -105,7 +106,7 @@ describe("Semver Updater", () => {
 
     await updater.update('foo', 'bar', 'patch')
 
-    expect(request.mock.calls).toHaveLength(5)
+    expect(request.mock.calls).toHaveLength(6)
 
     const release = request.mock.calls[0]
     expect(release[0]).toBe('GET /repos/{owner}/{repo}/releases')
@@ -150,6 +151,16 @@ describe("Semver Updater", () => {
       force: true
     })
 
+    const createRelease = request.mock.calls[5]
+    expect(createRelease[0]).toBe('POST /repos/{owner}/{repo}/releases')
+    expect(createRelease[1]).toEqual({
+      owner: 'foo',
+      repo: 'bar',
+      tag_name: 'v1.0.4',
+      name: 'v1.0.4',
+      generate_release_notes: true
+    })
+
   })
 
   test("Update minor version", async () => {
@@ -187,7 +198,7 @@ describe("Semver Updater", () => {
 
     await updater.update('foo', 'bar', 'minor')
 
-    expect(request.mock.calls).toHaveLength(5)
+    expect(request.mock.calls).toHaveLength(6)
 
     const release = request.mock.calls[0]
     expect(release[0]).toBe('GET /repos/{owner}/{repo}/releases')
@@ -231,6 +242,16 @@ describe("Semver Updater", () => {
       force: true
     })
 
+    const createRelease = request.mock.calls[5]
+    expect(createRelease[0]).toBe('POST /repos/{owner}/{repo}/releases')
+    expect(createRelease[1]).toEqual({
+      owner: 'foo',
+      repo: 'bar',
+      tag_name: 'v1.1.0',
+      name: 'v1.1.0',
+      generate_release_notes: true
+    })
+
   })
 
   test("Update major version", async () => {
@@ -264,7 +285,7 @@ describe("Semver Updater", () => {
 
     await updater.update('foo', 'bar', 'major')
 
-    expect(request.mock.calls).toHaveLength(5)
+    expect(request.mock.calls).toHaveLength(6)
 
     const release = request.mock.calls[0]
     expect(release[0]).toBe('GET /repos/{owner}/{repo}/releases')
@@ -305,6 +326,100 @@ describe("Semver Updater", () => {
       repo: 'bar',
       sha: 'iamasha',
       ref: 'refs/tags/v2'
+    })
+
+    const createRelease = request.mock.calls[5]
+    expect(createRelease[0]).toBe('POST /repos/{owner}/{repo}/releases')
+    expect(createRelease[1]).toEqual({
+      owner: 'foo',
+      repo: 'bar',
+      tag_name: 'v2.0.0',
+      name: 'v2.0.0',
+      generate_release_notes: true
+    })
+
+  })
+
+  test("Update major version when no prior releases", async () => {
+    const request = jest.fn()
+      .mockReturnValueOnce(Promise.resolve({
+        status: 200,
+        data: []
+      }))
+      .mockReturnValueOnce(Promise.resolve({
+        status: 200,
+        data: [{
+          sha: 'iamasha'
+        }]
+      }))
+      .mockReturnValueOnce(Promise.resolve({
+        status: 201,
+        data: 'success'
+      }))
+      .mockReturnValueOnce(Promise.resolve({
+        status: 201,
+        data: 'success'
+      }))
+      .mockReturnValueOnce(Promise.resolve({
+        status: 201,
+        data: 'success'
+      }))
+
+    const updater = new Updater({ request })
+
+    await updater.update('foo', 'bar', 'major')
+
+    expect(request.mock.calls).toHaveLength(6)
+
+    const release = request.mock.calls[0]
+    expect(release[0]).toBe('GET /repos/{owner}/{repo}/releases')
+    expect(release[1]).toEqual({
+      owner: 'foo',
+      repo: 'bar'
+    })
+
+    const commit = request.mock.calls[1]
+    expect(commit[0]).toBe('GET /repos/{owner}/{repo}/commits')
+    expect(commit[1]).toEqual({
+      owner: 'foo',
+      repo: 'bar'
+    })
+
+    const bumpMajorMinorPatch = request.mock.calls[2]
+    expect(bumpMajorMinorPatch[0]).toBe('POST /repos/{owner}/{repo}/git/refs')
+    expect(bumpMajorMinorPatch[1]).toEqual({
+      owner: 'foo',
+      repo: 'bar',
+      sha: 'iamasha',
+      ref: 'refs/tags/v1.0.0'
+    })
+
+    const bumpMajorMinor = request.mock.calls[3]
+    expect(bumpMajorMinor[0]).toBe('POST /repos/{owner}/{repo}/git/refs')
+    expect(bumpMajorMinor[1]).toEqual({
+      owner: 'foo',
+      repo: 'bar',
+      sha: 'iamasha',
+      ref: 'refs/tags/v1.0'
+    })
+
+    const bumpMajor = request.mock.calls[4]
+    expect(bumpMajor[0]).toBe('POST /repos/{owner}/{repo}/git/refs')
+    expect(bumpMajor[1]).toEqual({
+      owner: 'foo',
+      repo: 'bar',
+      sha: 'iamasha',
+      ref: 'refs/tags/v1'
+    })
+
+    const createRelease = request.mock.calls[5]
+    expect(createRelease[0]).toBe('POST /repos/{owner}/{repo}/releases')
+    expect(createRelease[1]).toEqual({
+      owner: 'foo',
+      repo: 'bar',
+      tag_name: 'v1.0.0',
+      name: 'v1.0.0',
+      generate_release_notes: true
     })
 
   })
